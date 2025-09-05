@@ -13,24 +13,15 @@
 - **DURUM:** AKTİF GELİŞTİRME AŞAMASINDA
 
 ---
-
-## 📁 **DOSYA YAPISI**
-
-```plaintext
-├── CONFIG.PY       # TOKEN VE VERİTABANI ADI BURADA TANIMLANIR
-├── LOGIC.PY        # VERİTABANI BAĞLANTISI VE VERİ ÇEKME FONKSİYONU
-├── MODAL.PY        # DISCORD MODAL PENCERESİ VE BUTON ETKİLEŞİMİ
-├── BOT.PY          # PROJE KAYDETME VE KOMUT YÖNETİMİ
-├── DB.PY           # (OPSİYONEL) VERİTABANI OLUŞTURMA VE TABLO TANIMI
-├── README.MD       # BU DOSYA 😎
-
-## ⚙️ CONFIG.PY
+## **⚙️ CONFIG.PY**
 python
 TOKEN = "YOUR_DISCORD_BOT_TOKEN"
 DB_NAME = "projects.db"
 Token ve veritabanı ismi burada tanımlanır. Güvenlik için .gitignore ile koruma önerilir.
 
-## 🧩 LOGIC.PY
+----------------------------------------------- 
+
+## 🧩 **LOGIC.PY**
 python
 import sqlite3
 
@@ -43,7 +34,9 @@ def get_data():
     return data
 Bu dosya, SQLite veritabanına bağlanır ve projects tablosundaki tüm kayıtları çeker. Fonksiyon get_data() ile veriler fetchall() yöntemiyle alınır ve geri döndürülür.
 
-## 🪟 MODAL.PY
+----------------------------------------------- 
+
+## 🪟 **MODAL.PY**
 python
 from discord import ui, TextStyle
 
@@ -58,7 +51,9 @@ class TestModal(ui.Modal, title='Test başlık'):
         )
 Kullanıcıdan kısa ve uzun metin alan bir Discord modal penceresi tanımlar. on_submit() fonksiyonu ile girilen veriler kullanıcıya özel olarak gösterilir.
 
-## 📥 BOT.PY
+----------------------------------------------- 
+
+## 📥 **BOT.PY**
 python
 import discord
 from discord.ext import commands
@@ -76,7 +71,7 @@ async def proje_ekle(ctx, isim, açıklama):
     await ctx.send(f"✅ Proje eklendi: {isim}")
 Kullanıcının girdiği proje bilgilerini veritabanına kaydeder. !proje_ekle <isim> <açıklama> komutu ile çalışır.
 
-## 🗃️ DB.PY
+ ## 🗃️ **DB.PY**
 python
 import sqlite3
 
@@ -97,7 +92,23 @@ def create_db():
     conn.close()
 Veritabanı dosyasını oluşturur ve projects tablosunu tanımlar. Geliştirme aşamasında ilk çalıştırmada çağrılması önerilir.
 
-## ✨ KATKI SAĞLAMAK
+----------------------------------------------- 
+
+## ✨ **KATKI SAĞLAMAK**
 Pull request gönder, yıldız ver, forkla, yorum bırak. Kod sade, mizah bol, katkı her zaman açık!
+
+----------------------------------------------- 
+
+## 📁 **DOSYA YAPISI**
+
+```plaintext
+├── CONFIG.PY       # TOKEN VE VERİTABANI ADI BURADA TANIMLANIR
+├── LOGIC.PY        # VERİTABANI BAĞLANTISI VE VERİ ÇEKME FONKSİYONU
+├── MODAL.PY        # DISCORD MODAL PENCERESİ VE BUTON ETKİLEŞİMİ
+├── BOT.PY          # PROJE KAYDETME VE KOMUT YÖNETİMİ
+├── DB.PY           # (OPSİYONEL) VERİTABANI OLUŞTURMA VE TABLO TANIMI
+├── README.MD       # BU DOSYA 😎
+
+
 
 
