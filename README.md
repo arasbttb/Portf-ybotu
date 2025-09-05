@@ -1,74 +1,103 @@
-🧠 Genel Yapı
-sqlite3: Python’un gömülü veritabanı modülü.
+# 🚀 **PORTFY BOTU**
 
-DATABASE: config dosyasından gelen veritabanı yolu.
+**PORTFY**, GELİŞTİRİCİ PROJELERİNİ KAYDEDEN, MODAL PENCERELERLE ETKİLEŞİM KURAN VE SQLITE VERİTABANI ÜZERİNDEN VERİ YÖNETEN BİR DISCORD BOTUDUR.  
+ÖDEV GİBİ BAŞLADI, EFSANE GİBİ GELİŞİYOR. 😎
 
-skills ve statuses: başlangıçta veritabanına eklenecek sabit veriler.
+---
 
-🏗️ Sınıf: DB_Manager
-Veritabanı işlemlerini yöneten ana sınıf.
+## 🧠 **GENEL YAPI**
 
-🔧 __init__
-Veritabanı yolunu alır ve saklar.
+- **DİL:** PYTHON  
+- **VERİTABANI:** SQLITE3 (`PROJECTS.DB`)  
+- **LİSANS:** GPL-3.0  
+- **DURUM:** AKTİF GELİŞTİRME AŞAMASINDA
 
-🧱 create_tables()
-4 tablo oluşturur:
+---
 
-projects: Proje bilgileri.
+## 📁 **DOSYA YAPISI**
 
-skills: Yetenek listesi.
+```plaintext
+├── CONFIG.PY       # TOKEN VE VERİTABANI ADI BURADA TANIMLANIR
+├── LOGIC.PY        # VERİTABANI BAĞLANTISI VE VERİ ÇEKME FONKSİYONU
+├── MODAL.PY        # DISCORD MODAL PENCERESİ VE BUTON ETKİLEŞİMİ
+├── BOT.PY          # PROJE KAYDETME VE KOMUT YÖNETİMİ
+├── DB.PY           # (OPSİYONEL) VERİTABANI OLUŞTURMA VE TABLO TANIMI
+├── README.MD       # BU DOSYA 😎
 
-project_skills: Proje-yetenek eşleşmeleri.
-
-status: Proje durumları.
-
-📥 default_insert()
-skills ve statuses listesini veritabanına ekler (INSERT OR IGNORE ile tekrarları engeller).
-
-🔐 Özel Yardımcı Fonksiyonlar
-🔄 __executemany(sql, data)
-Çoklu veri ekleme işlemi.
-
-🔍 __select_data(sql, data)
-Veri çekme işlemi.
-
-📌 Veri Ekleme Fonksiyonları
-➕ insert_project(data)
-Yeni proje ekler.
-
-➕ insert_skill(user_id, project_name, skill)
-Projeye yetenek bağlar:
-
-Proje ID’sini ve skill ID’sini bulur.
-
-project_skills tablosuna ekler.
-
-📤 Veri Çekme Fonksiyonları
-get_statuses(): Tüm durumları getirir.
-
-get_status_id(status_name): Durum adına göre ID döner.
-
-get_projects(user_id): Kullanıcının projelerini listeler.
-
-get_project_id(project_name, user_id): Proje ID’sini döner.
-
-get_skills(): Tüm yetenekleri listeler.
-
-get_project_skills(project_name): Projeye ait yetenekleri döner.
-
-get_project_info(user_id, project_name): Proje detaylarını döner.
-
-🛠️ Güncelleme ve Silme
-update_projects(param, data): Belirtilen alanı günceller.
-
-delete_project(user_id, project_id): Projeyi siler.
-
-delete_skill(project_id, skill_id): Projeden yeteneği siler.
-
-🚀 Çalıştırma Bloğu
+## ⚙️ CONFIG.PY
 python
-if __name__ == '__main__':
-    manager = DB_Manager(DATABASE)
-    manager.create_tables()
-    manager.default_insert()
-Kod doğrudan çalıştırıldığında tablo oluşturur ve başlangıç verilerini ekler.
+TOKEN = "YOUR_DISCORD_BOT_TOKEN"
+DB_NAME = "projects.db"
+Token ve veritabanı ismi burada tanımlanır. Güvenlik için .gitignore ile koruma önerilir.
+
+## 🧩 LOGIC.PY
+python
+import sqlite3
+
+def get_data():
+    conn = sqlite3.connect('projects.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT name, description, platform, language, interest FROM projects')
+    data = cursor.fetchall()
+    conn.close()
+    return data
+Bu dosya, SQLite veritabanına bağlanır ve projects tablosundaki tüm kayıtları çeker. Fonksiyon get_data() ile veriler fetchall() yöntemiyle alınır ve geri döndürülür.
+
+## 🪟 MODAL.PY
+python
+from discord import ui, TextStyle
+
+class TestModal(ui.Modal, title='Test başlık'):
+    field_1 = ui.TextInput(label='Kısa metin')
+    field_2 = ui.TextInput(label='Uzun metin', style=TextStyle.paragraph)
+
+    async def on_submit(self, interaction):
+        await interaction.response.send_message(
+            f"Kısa metin: {self.field_1.value}\nUzun metin: {self.field_2.value}",
+            ephemeral=True
+        )
+Kullanıcıdan kısa ve uzun metin alan bir Discord modal penceresi tanımlar. on_submit() fonksiyonu ile girilen veriler kullanıcıya özel olarak gösterilir.
+
+## 📥 BOT.PY
+python
+import discord
+from discord.ext import commands
+import sqlite3
+
+bot = commands.Bot(command_prefix='!')
+
+@bot.command()
+async def proje_ekle(ctx, isim, açıklama):
+    conn = sqlite3.connect('projects.db')
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO projects (name, description) VALUES (?, ?)", (isim, açıklama))
+    conn.commit()
+    conn.close()
+    await ctx.send(f"✅ Proje eklendi: {isim}")
+Kullanıcının girdiği proje bilgilerini veritabanına kaydeder. !proje_ekle <isim> <açıklama> komutu ile çalışır.
+
+## 🗃️ DB.PY
+python
+import sqlite3
+
+def create_db():
+    conn = sqlite3.connect('projects.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS projects (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            description TEXT,
+            platform TEXT,
+            language TEXT,
+            interest TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+Veritabanı dosyasını oluşturur ve projects tablosunu tanımlar. Geliştirme aşamasında ilk çalıştırmada çağrılması önerilir.
+
+## ✨ KATKI SAĞLAMAK
+Pull request gönder, yıldız ver, forkla, yorum bırak. Kod sade, mizah bol, katkı her zaman açık!
+
+
